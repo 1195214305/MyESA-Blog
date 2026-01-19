@@ -58,7 +58,7 @@ export const StatsCard = () => {
 
     return (
         <GlassCard className="p-4">
-            <h3 className="font-medium text-white mb-3 flex items-center gap-2">
+            <h3 className="font-medium text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                 📊 站点统计
             </h3>
             <div className="grid grid-cols-3 gap-3 text-center">
@@ -66,15 +66,15 @@ export const StatsCard = () => {
                     <div className="flex items-center justify-center gap-1 text-violet-400 mb-1">
                         <Eye size={14} />
                     </div>
-                    <p className="text-2xl font-bold text-white">{stats.totalViews}</p>
-                    <p className="text-xs text-slate-400">总访问</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalViews}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">总访问</p>
                 </div>
                 <div>
                     <div className="flex items-center justify-center gap-1 text-cyan-400 mb-1">
                         <Users size={14} />
                     </div>
-                    <p className="text-2xl font-bold text-white">{stats.todayViews}</p>
-                    <p className="text-xs text-slate-400">今日</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.todayViews}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">今日</p>
                 </div>
                 <div>
                     <div className="flex items-center justify-center gap-1 text-green-400 mb-1">

@@ -54,14 +54,14 @@ export const CalendarCard = () => {
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <Calendar className="text-violet-400" size={18} />
-                        <span className="text-slate-400 text-sm">今日</span>
+                        <span className="text-slate-500 dark:text-slate-400 text-sm">今日</span>
                     </div>
 
                     {/* 公历日期 */}
-                    <div className="text-4xl font-bold text-white font-kaiti">
+                    <div className="text-4xl font-bold text-slate-900 dark:text-white font-kaiti">
                         {now.getDate()}
                     </div>
-                    <div className="text-slate-300">
+                    <div className="text-slate-600 dark:text-slate-300">
                         {now.getFullYear()}年{now.getMonth() + 1}月 · 周{weekDays[now.getDay()]}
                     </div>
                 </div>
@@ -85,7 +85,7 @@ export const CalendarCard = () => {
                     )}
 
                     {/* 时间 */}
-                    <div className="text-2xl font-mono text-slate-300 mt-2">
+                    <div className="text-2xl font-mono text-slate-700 dark:text-slate-300 mt-2">
                         {now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                 </div>

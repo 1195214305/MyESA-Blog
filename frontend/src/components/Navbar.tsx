@@ -23,12 +23,12 @@ export const Navbar = () => {
         <motion.header
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+            className="fixed top-4 left-4 z-50"
         >
-            <nav className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl whitespace-nowrap">
+            <nav className="flex items-center gap-1 px-3 py-2 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-white/20 shadow-2xl">
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 px-3 py-1.5 mr-2">
-                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
+                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-600 dark:from-violet-400 dark:to-cyan-400">
                         TaoChen
                     </span>
                     <span className="text-lg">🌙</span>
@@ -46,10 +46,8 @@ export const Navbar = () => {
                                 "relative flex items-center gap-1 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                                 isActive
                                     ? "text-white"
-                                    : theme === "dark"
-                                        ? "text-slate-300 hover:text-white"
-                                        : "text-slate-600 hover:text-slate-900",
-                                item.highlight && !isActive && "text-orange-400"
+                                    : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white",
+                                item.highlight && !isActive && "text-orange-500 dark:text-orange-400"
                             )}
                         >
                             {isActive && (
@@ -72,9 +70,9 @@ export const Navbar = () => {
                 <SmartSearch />
 
                 {/* Music Player Placeholder */}
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-slate-400 hover:text-white transition-colors">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
                     <Music size={16} />
-                    <span className="hidden md:inline text-xs">星河乐章</span>
+                    <span className="hidden lg:inline text-xs">星河乐章</span>
                 </button>
 
                 {/* Theme Selector */}
@@ -83,13 +81,13 @@ export const Navbar = () => {
                 {/* Theme Toggle */}
                 <button
                     onClick={toggleTheme}
-                    className="p-2 rounded-full text-slate-400 hover:text-white transition-colors"
+                    className="p-2 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                 >
                     {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
                 </button>
 
                 {/* Settings */}
-                <button className="p-2 rounded-full text-slate-400 hover:text-white transition-colors">
+                <button className="p-2 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
                     <Settings size={18} />
                 </button>
             </nav>

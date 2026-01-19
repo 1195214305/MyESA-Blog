@@ -53,15 +53,15 @@ export const TodoCard = () => {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <Target className="text-orange-400" size={18} />
-                    <span className="font-bold text-white">今日目标</span>
+                    <span className="font-bold text-slate-900 dark:text-white">今日目标</span>
                 </div>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                     {completedCount}/{todos.length} 已完成
                 </span>
             </div>
 
             {/* Progress Bar */}
-            <div className="h-1.5 bg-slate-700 rounded-full mb-4 overflow-hidden">
+            <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mb-4 overflow-hidden">
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
@@ -78,7 +78,7 @@ export const TodoCard = () => {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
-                            className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${todo.completed ? 'bg-green-500/10' : 'bg-white/5 hover:bg-white/10'
+                            className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${todo.completed ? 'bg-green-500/10' : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10'
                                 }`}
                         >
                             <button
@@ -90,7 +90,7 @@ export const TodoCard = () => {
                             >
                                 {todo.completed && <Check size={12} className="text-white" />}
                             </button>
-                            <span className={`flex-1 text-sm ${todo.completed ? 'line-through text-slate-500' : 'text-white'
+                            <span className={`flex-1 text-sm ${todo.completed ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'
                                 }`}>
                                 {todo.text}
                             </span>
@@ -114,7 +114,7 @@ export const TodoCard = () => {
                         onChange={(e) => setNewTodo(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && addTodo()}
                         placeholder="输入新目标..."
-                        className="flex-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-orange-500"
+                        className="flex-1 px-3 py-1.5 bg-slate-100 dark:bg-white/5 border border-slate-300 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                         autoFocus
                     />
                     <button
@@ -127,7 +127,7 @@ export const TodoCard = () => {
             ) : (
                 <button
                     onClick={() => setIsAdding(true)}
-                    className="flex items-center gap-1.5 mt-3 text-sm text-slate-400 hover:text-orange-400 transition-colors"
+                    className="flex items-center gap-1.5 mt-3 text-sm text-slate-500 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
                 >
                     <Plus size={14} />
                     添加目标
