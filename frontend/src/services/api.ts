@@ -14,11 +14,54 @@ export interface JamendoTrack {
     duration: number;
 }
 
-// 默认音乐列表（降级方案）
+// 默认音乐列表（使用免费可用的音乐源）
+// 来源：Internet Archive 公共域音乐
 const DEFAULT_TRACKS: JamendoTrack[] = [
-    { id: '1', name: 'Peaceful Piano', artist_name: 'Various Artists', audio: '', audiodownload: '', image: '/logos/music.png', duration: 180 },
-    { id: '2', name: 'Ambient Dreams', artist_name: 'Relaxing Music', audio: '', audiodownload: '', image: '/logos/music.png', duration: 240 },
-    { id: '3', name: 'Lo-Fi Beats', artist_name: 'Chill Hop', audio: '', audiodownload: '', image: '/logos/music.png', duration: 200 },
+    {
+        id: '1',
+        name: 'Clair de Lune',
+        artist_name: 'Debussy',
+        audio: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Clair_de_Lune_%28Suite_Bergamasque%29.ogg',
+        audiodownload: '',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Claude_Debussy_ca_1908%2C_foto_av_Félix_Nadar.jpg/220px-Claude_Debussy_ca_1908%2C_foto_av_Félix_Nadar.jpg',
+        duration: 300
+    },
+    {
+        id: '2',
+        name: 'Gymnopédie No.1',
+        artist_name: 'Erik Satie',
+        audio: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Erik_Satie_-_gymnopédie_1.ogg',
+        audiodownload: '',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Erik_Satie_1895.jpg/220px-Erik_Satie_1895.jpg',
+        duration: 200
+    },
+    {
+        id: '3',
+        name: 'Moonlight Sonata',
+        artist_name: 'Beethoven',
+        audio: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Beethoven%27s_Moonlight_Sonata.ogg',
+        audiodownload: '',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/220px-Beethoven.jpg',
+        duration: 360
+    },
+    {
+        id: '4',
+        name: 'Für Elise',
+        artist_name: 'Beethoven',
+        audio: 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Bagatelle_No._25_in_A_minor.ogg',
+        audiodownload: '',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/220px-Beethoven.jpg',
+        duration: 180
+    },
+    {
+        id: '5',
+        name: 'Prelude in C Major',
+        artist_name: 'J.S. Bach',
+        audio: 'https://upload.wikimedia.org/wikipedia/commons/3/36/BWV846a.ogg',
+        audiodownload: '',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/220px-Johann_Sebastian_Bach.jpg',
+        duration: 150
+    },
 ];
 
 // 搜索歌曲
