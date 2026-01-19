@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ed7410"/>
+      <stop offset="100%" style="stop-color:#f19132"/>
+    </linearGradient>
+  </defs>
+  <!-- 背景圆 -->
+  <circle cx="50" cy="50" r="45" fill="url(#warmGrad)"/>
+  <!-- 麦克风图标 -->
+  <rect x="40" y="25" width="20" height="30" rx="10" fill="white"/>
+  <rect x="45" y="55" width="10" height="12" fill="white"/>
+  <rect x="38" y="65" width="24" height="4" rx="2" fill="white"/>
+  <!-- 声波 -->
+  <path d="M30 40 Q25 50 30 60" stroke="white" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M22 35 Q15 50 22 65" stroke="white" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M70 40 Q75 50 70 60" stroke="white" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M78 35 Q85 50 78 65" stroke="white" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <!-- 文字符号 A -->
+  <text x="50" y="88" text-anchor="middle" font-family="Arial Black" font-size="14" fill="white" font-weight="bold">A</text>
+</svg>

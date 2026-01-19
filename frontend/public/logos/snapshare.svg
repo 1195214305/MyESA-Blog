@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <linearGradient id="flameGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#f97316"/>
+      <stop offset="50%" style="stop-color:#ef4444"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景圆 -->
+  <circle cx="32" cy="32" r="30" fill="#0f172a"/>
+  <circle cx="32" cy="32" r="28" fill="none" stroke="url(#lockGradient)" stroke-width="2" opacity="0.3"/>
+
+  <!-- 锁体 -->
+  <rect x="20" y="28" width="24" height="20" rx="3" fill="url(#lockGradient)"/>
+
+  <!-- 锁环 -->
+  <path d="M24 28V22C24 17.5817 27.5817 14 32 14C36.4183 14 40 17.5817 40 22V28"
+        stroke="url(#lockGradient)" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- 锁孔 -->
+  <circle cx="32" cy="36" r="3" fill="#0f172a"/>
+  <rect x="30.5" y="36" width="3" height="6" rx="1" fill="#0f172a"/>
+
+  <!-- 火焰效果 -->
+  <path d="M32 52C32 52 28 48 28 44C28 40 30 38 32 36C34 38 36 40 36 44C36 48 32 52 32 52Z"
+        fill="url(#flameGradient)" opacity="0.8"/>
+  <path d="M32 50C32 50 30 47 30 45C30 43 31 42 32 41C33 42 34 43 34 45C34 47 32 50 32 50Z"
+        fill="#fbbf24"/>
+</svg>

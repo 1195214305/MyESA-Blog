@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="successGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 背景圆 -->
+  <circle cx="50" cy="50" r="45" fill="#f1f5f9" stroke="url(#flowGrad)" stroke-width="2"/>
+
+  <!-- 工作流节点 -->
+  <!-- 触发器节点 -->
+  <circle cx="25" cy="35" r="10" fill="url(#flowGrad)"/>
+  <path d="M22 35 L28 35 M25 32 L25 38" stroke="white" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 处理节点 -->
+  <rect x="40" y="25" width="20" height="20" rx="4" fill="url(#flowGrad)"/>
+  <path d="M45 35 L55 35 M50 30 L50 40" stroke="white" stroke-width="2" stroke-linecap="round" transform="rotate(45 50 35)"/>
+
+  <!-- 输出节点 -->
+  <circle cx="75" cy="35" r="10" fill="url(#successGrad)"/>
+  <path d="M71 35 L74 38 L79 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 连接线 -->
+  <path d="M35 35 L40 35" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,2">
+    <animate attributeName="stroke-dashoffset" values="0;-6" dur="0.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M60 35 L65 35" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,2">
+    <animate attributeName="stroke-dashoffset" values="0;-6" dur="0.5s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 第二行节点 -->
+  <circle cx="35" cy="65" r="8" fill="#94a3b8"/>
+  <rect x="47" y="57" width="16" height="16" rx="3" fill="#94a3b8"/>
+  <circle cx="75" cy="65" r="8" fill="#94a3b8"/>
+
+  <!-- 连接线 -->
+  <path d="M43 65 L47 65" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <path d="M63 65 L67 65" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- 垂直连接 -->
+  <path d="M50 45 L50 57" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- 边缘标识 -->
+  <text x="50" y="88" text-anchor="middle" fill="#3b82f6" font-size="8" font-weight="bold" font-family="sans-serif">EDGE</text>
+</svg>

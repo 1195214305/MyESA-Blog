@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="timeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6370f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#423dca;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eab308;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ca8a04;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 外圈 - 时钟 -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#timeGrad)" stroke-width="3"/>
+
+  <!-- 时间刻度 -->
+  <g stroke="#6370f1" stroke-width="2">
+    <line x1="50" y1="8" x2="50" y2="15"/>
+    <line x1="50" y1="85" x2="50" y2="92"/>
+    <line x1="8" y1="50" x2="15" y2="50"/>
+    <line x1="85" y1="50" x2="92" y2="50"/>
+  </g>
+
+  <!-- 内圈 - 地球 -->
+  <circle cx="50" cy="50" r="30" fill="#f0f4ff" stroke="url(#goldGrad)" stroke-width="2"/>
+
+  <!-- 简化的大陆轮廓 -->
+  <path d="M35 40 Q40 35 50 38 Q60 35 65 42 Q68 50 62 58 Q55 62 45 60 Q38 58 35 50 Q32 45 35 40"
+        fill="#c7d6fe" stroke="none"/>
+
+  <!-- 时针 -->
+  <line x1="50" y1="50" x2="50" y2="25" stroke="url(#timeGrad)" stroke-width="3" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="60s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- 分针 -->
+  <line x1="50" y1="50" x2="50" y2="18" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="10s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- 中心点 -->
+  <circle cx="50" cy="50" r="4" fill="url(#goldGrad)"/>
+
+  <!-- 时光粒子 -->
+  <circle cx="25" cy="30" r="2" fill="#6370f1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="75" cy="70" r="2" fill="#eab308" opacity="0.6">
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

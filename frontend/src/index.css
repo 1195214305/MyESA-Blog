@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 导入楷体和优雅字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap');
+
+@layer base {
+  body {
+    @apply antialiased;
+    /* 主字体：思源宋体 + 楷体备选 */
+    font-family: 'Noto Serif SC', 'Ma Shan Zheng', 'ZCOOL KuaiLe', 'KaiTi', 'STKaiti', '楷体', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* 标题使用更粗的字体 */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Ma Shan Zheng', 'Noto Serif SC', 'STKaiti', '楷体', serif;
+    font-weight: 600;
+  }
+
+  /* 确保不同背景下文字可见 */
+  .text-readable {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* 浅色背景下的文字 */
+  .light-bg-text {
+    color: #1e293b;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  /* 深色背景下的文字 */
+  .dark-bg-text {
+    color: #f1f5f9;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/30;
+  }
+}
+
+@layer components {
+
+  /* 玻璃卡片 - 确保在任何背景下都可读 */
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 浅色主题玻璃卡片 */
+  .glass-card-light {
+    @apply bg-black/5 backdrop-blur-xl border border-black/10;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  /* 文字背景遮罩 - 确保可读性 */
+  .text-backdrop {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400;
+  }
+
+  /* 楷体装饰字体 */
+  .font-kaiti {
+    font-family: 'Ma Shan Zheng', 'ZCOOL KuaiLe', 'KaiTi', 'STKaiti', '楷体', serif;
+  }
+
+  /* 优雅衬线字体 */
+  .font-elegant {
+    font-family: 'Noto Serif SC', 'STKaiti', serif;
+  }
+}

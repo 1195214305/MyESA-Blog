@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#22c55e;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <!-- 盾牌外框 -->
+  <path d="M50 5 L90 20 L90 50 Q90 80 50 95 Q10 80 10 50 L10 20 Z"
+        fill="none" stroke="url(#shieldGrad)" stroke-width="3"/>
+
+  <!-- 盾牌内部 -->
+  <path d="M50 12 L82 24 L82 48 Q82 74 50 87 Q18 74 18 48 L18 24 Z"
+        fill="#0f172a" stroke="url(#shieldGrad)" stroke-width="1"/>
+
+  <!-- 扫描线 -->
+  <rect x="18" y="24" width="64" height="63" fill="url(#scanGrad)">
+    <animate attributeName="y" values="24;87;24" dur="2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- 中心图标 - 眼睛 -->
+  <ellipse cx="50" cy="50" rx="20" ry="12" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <circle cx="50" cy="50" r="6" fill="#22c55e">
+    <animate attributeName="r" values="6;8;6" dur="1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 雷达线 -->
+  <line x1="50" y1="50" x2="50" y2="30" stroke="#22c55e" stroke-width="1" opacity="0.5">
+    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="3s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- 警报点 -->
+  <circle cx="70" cy="35" r="3" fill="#ef4444">
+    <animate attributeName="opacity" values="1;0.3;1" dur="0.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

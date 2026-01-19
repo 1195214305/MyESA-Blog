@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="dna" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#171717"/>
+      <stop offset="100%" style="stop-color:#404040"/>
+    </linearGradient>
+  </defs>
+  <!-- DNA双螺旋简化图标 -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#171717" stroke-width="3"/>
+  <!-- 细胞核 -->
+  <circle cx="50" cy="50" r="20" fill="#262626"/>
+  <!-- DNA螺旋线条 -->
+  <path d="M35 25 Q50 35 65 25 Q50 45 35 55 Q50 65 65 55 Q50 75 35 75"
+        fill="none" stroke="#525252" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M65 25 Q50 35 35 25 Q50 45 65 55 Q50 65 35 55 Q50 75 65 75"
+        fill="none" stroke="#737373" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 碱基对连接 -->
+  <line x1="38" y1="30" x2="62" y2="30" stroke="#a3a3a3" stroke-width="1.5"/>
+  <line x1="42" y1="40" x2="58" y2="40" stroke="#a3a3a3" stroke-width="1.5"/>
+  <line x1="38" y1="50" x2="62" y2="50" stroke="#a3a3a3" stroke-width="1.5"/>
+  <line x1="42" y1="60" x2="58" y2="60" stroke="#a3a3a3" stroke-width="1.5"/>
+  <line x1="38" y1="70" x2="62" y2="70" stroke="#a3a3a3" stroke-width="1.5"/>
+</svg>
