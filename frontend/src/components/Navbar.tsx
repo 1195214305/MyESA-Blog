@@ -25,7 +25,7 @@ export const Navbar = () => {
             animate={{ y: 0, opacity: 1 }}
             className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
         >
-            <nav className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+            <nav className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl whitespace-nowrap">
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 px-3 py-1.5 mr-2">
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
