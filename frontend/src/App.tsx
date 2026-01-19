@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useThemeStore } from "@/store";
 import { Navbar } from "@/components/Navbar";
 import { AIAssistant } from "@/components/AIAssistant";
-import { Live2DAvatar } from "@/components/Live2DAvatar";
 import { HomePage } from "@/pages/Home";
 import { ProjectsPage } from "@/pages/Projects";
 import { NotesPage } from "@/pages/Notes";
@@ -65,7 +64,6 @@ function App() {
           </main>
 
           <AIAssistant />
-          <Live2DAvatar />
         </div>
       </div>
     </Router>

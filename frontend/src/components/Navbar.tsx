@@ -43,7 +43,7 @@ export const Navbar = () => {
                             key={item.path}
                             to={item.path}
                             className={cn(
-                                "relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                                "relative flex items-center gap-1 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                                 isActive
                                     ? "text-white"
                                     : theme === "dark"
@@ -59,9 +59,8 @@ export const Navbar = () => {
                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                 />
                             )}
-                            {item.highlight && <span className="text-orange-400">✏️</span>}
-                            {!item.highlight && <Icon size={14} />}
-                            <span>{item.label}</span>
+                            <Icon size={16} />
+                            <span className="inline">{item.label}</span>
                         </Link>
                     );
                 })}
