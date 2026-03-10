@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenTool, Heart, Calendar, Plus, X } from "lucide-react";
+import { PenTool, Heart, Calendar, Plus, X, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 
 interface Note {
@@ -11,35 +11,29 @@ interface Note {
     likes: number;
 }
 
-const initialNotes: Note[] = [
-    {
-        id: 1,
-        title: "边缘计算的思考",
-        content: "今天深入研究了阿里云 ESA Pages 的边缘函数功能，发现它可以在全球各地的边缘节点运行代码，大大降低了延迟。这对于需要快速响应的应用来说是革命性的...",
-        date: "2026-01-18",
-        likes: 12,
-    },
-    {
-        id: 2,
-        title: "React 19 新特性体验",
-        content: "React 19 带来了很多令人兴奋的新特性，包括更好的 Server Components 支持、改进的 Suspense 边界处理等。今天花了一些时间升级项目...",
-        date: "2026-01-15",
-        likes: 8,
-    },
-    {
-        id: 3,
-        title: "AI 编程助手的进化",
-        content: "AI 编程助手已经从简单的代码补全进化到了能够理解整个项目上下文、进行复杂重构的阶段。这让我思考未来程序员的角色会如何变化...",
-        date: "2026-01-10",
-        likes: 24,
-    },
-];
+const STORAGE_KEY = "blog_notes";
+
+function loadNotes(): Note[] {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch {}
+    return [];
+}
+
+function saveNotes(notes: Note[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+}
 
 export const NotesPage = () => {
-    const [notes, setNotes] = useState<Note[]>(initialNotes);
+    const [notes, setNotes] = useState<Note[]>(loadNotes);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [newNote, setNewNote] = useState({ title: "", content: "" });
+
+    useEffect(() => {
+        saveNotes(notes);
+    }, [notes]);
 
     const handleLike = (id: number) => {
         setNotes((prev) =>
@@ -61,6 +55,11 @@ export const NotesPage = () => {
         setNotes((prev) => [note, ...prev]);
         setNewNote({ title: "", content: "" });
         setIsEditing(false);
+    };
+
+    const handleDelete = (id: number) => {
+        setNotes((prev) => prev.filter((n) => n.id !== id));
+        setSelectedNote(null);
     };
 
     return (
@@ -93,7 +92,7 @@ export const NotesPage = () => {
                         >
                             <GlassCard className="p-6">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold text-white">✍️ 写点什么</h3>
+                                    <h3 className="font-bold text-white">写点什么</h3>
                                     <button
                                         onClick={() => setIsEditing(false)}
                                         className="text-slate-400 hover:text-white"
@@ -117,7 +116,8 @@ export const NotesPage = () => {
                                 />
                                 <button
                                     onClick={handleAddNote}
-                                    className="px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-400 transition-colors"
+                                    disabled={!newNote.title.trim() || !newNote.content.trim()}
+                                    className="px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     发布
                                 </button>
@@ -128,40 +128,59 @@ export const NotesPage = () => {
 
                 {/* Notes List */}
                 <div className="space-y-4">
-                    {notes.map((note, idx) => (
-                        <motion.div
-                            key={note.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                        >
-                            <GlassCard
-                                className="p-6 cursor-pointer hover:border-orange-500/50 transition-colors"
-                                onClick={() => setSelectedNote(note)}
+                    {notes.length === 0 ? (
+                        <div className="text-center py-20 text-slate-400">
+                            <PenTool size={48} className="mx-auto mb-4 opacity-50" />
+                            <p>还没有手记，点击「新建手记」记录你的第一个想法吧</p>
+                        </div>
+                    ) : (
+                        notes.map((note, idx) => (
+                            <motion.div
+                                key={note.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
                             >
-                                <div className="flex items-start justify-between mb-2">
-                                    <h3 className="font-bold text-lg text-white">{note.title}</h3>
-                                    <span className="flex items-center gap-1 text-sm text-slate-400">
-                                        <Calendar size={14} />
-                                        {note.date}
-                                    </span>
-                                </div>
-                                <p className="text-slate-400 line-clamp-2 mb-4">{note.content}</p>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleLike(note.id);
-                                        }}
-                                        className="flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300 transition-colors"
-                                    >
-                                        <Heart size={16} fill="currentColor" />
-                                        {note.likes}
-                                    </button>
-                                </div>
-                            </GlassCard>
-                        </motion.div>
-                    ))}
+                                <GlassCard
+                                    className="p-6 cursor-pointer hover:border-orange-500/50 transition-colors group"
+                                    onClick={() => setSelectedNote(note)}
+                                >
+                                    <div className="flex items-start justify-between mb-2">
+                                        <h3 className="font-bold text-lg text-white">{note.title}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <span className="flex items-center gap-1 text-sm text-slate-400">
+                                                <Calendar size={14} />
+                                                {note.date}
+                                            </span>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(note.id);
+                                                }}
+                                                className="p-1 text-slate-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                                                title="删除手记"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p className="text-slate-400 line-clamp-2 mb-4">{note.content}</p>
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLike(note.id);
+                                            }}
+                                            className="flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300 transition-colors"
+                                        >
+                                            <Heart size={16} fill="currentColor" />
+                                            {note.likes}
+                                        </button>
+                                    </div>
+                                </GlassCard>
+                            </motion.div>
+                        ))
+                    )}
                 </div>
 
                 {/* Note Detail Modal */}

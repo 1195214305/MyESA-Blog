@@ -216,7 +216,11 @@ export const MusicPlayer = () => {
                                     }}
                                     className="flex items-center gap-2 p-2 rounded hover:bg-white/5 cursor-pointer"
                                 >
-                                    <img src={track.image} alt="" className="w-8 h-8 rounded" />
+                                    {track.image ? (
+                                        <img src={track.image} alt="" className="w-8 h-8 rounded" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center"><Music size={12} className="text-white" /></div>
+                                    )}
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm text-white truncate">{track.name}</p>
                                         <p className="text-xs text-slate-400 truncate">{track.artist_name}</p>
@@ -235,11 +239,18 @@ export const MusicPlayer = () => {
                 </div>
             ) : currentTrack ? (
                 <div className="flex items-center gap-4 mb-4">
-                    <img
-                        src={currentTrack.image || '/placeholder-album.png'}
-                        alt={currentTrack.name}
-                        className="w-16 h-16 rounded-lg object-cover shadow-lg"
-                    />
+                    {currentTrack.image ? (
+                        <img
+                            src={currentTrack.image}
+                            alt={currentTrack.name}
+                            className="w-16 h-16 rounded-lg object-cover shadow-lg"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                    ) : (
+                        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                            <Music size={24} className="text-white" />
+                        </div>
+                    )}
                     <div className="flex-1 min-w-0">
                         <p className="font-medium text-white truncate">{currentTrack.name}</p>
                         <p className="text-sm text-slate-400 truncate">{currentTrack.artist_name}</p>
@@ -317,7 +328,11 @@ export const MusicPlayer = () => {
                                     }`}
                             >
                                 <span className="w-6 text-xs text-slate-500">{idx + 1}</span>
-                                <img src={track.image} alt="" className="w-8 h-8 rounded" />
+                                {track.image ? (
+                                    <img src={track.image} alt="" className="w-8 h-8 rounded" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                ) : (
+                                    <div className="w-8 h-8 rounded bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center"><Music size={12} className="text-white" /></div>
+                                )}
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm text-white truncate">{track.name}</p>
                                     <p className="text-xs text-slate-400 truncate">{track.artist_name}</p>

@@ -22,7 +22,7 @@ const DEFAULT_TRACKS: JamendoTrack[] = [
         artist_name: 'Benjamin Tissot (Bensound)',
         audio: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3',
         audiodownload: '',
-        image: 'https://cdn.pixabay.com/audio/2022/05/27/00-20-42-462_200x200.png',
+        image: '',
         duration: 210
     },
     {
@@ -31,7 +31,7 @@ const DEFAULT_TRACKS: JamendoTrack[] = [
         artist_name: 'Lesfm',
         audio: 'https://cdn.pixabay.com/download/audio/2022/02/22/audio_d1718ab41b.mp3',
         audiodownload: '',
-        image: 'https://cdn.pixabay.com/audio/2022/02/22/10-34-19-623_200x200.png',
+        image: '',
         duration: 156
     },
     {
@@ -40,7 +40,7 @@ const DEFAULT_TRACKS: JamendoTrack[] = [
         artist_name: 'FASSounds',
         audio: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_dbde409f02.mp3',
         audiodownload: '',
-        image: 'https://cdn.pixabay.com/audio/2022/05/16/12-51-06-869_200x200.jpg',
+        image: '',
         duration: 138
     },
     {
@@ -49,7 +49,7 @@ const DEFAULT_TRACKS: JamendoTrack[] = [
         artist_name: 'Lexin_Music',
         audio: 'https://cdn.pixabay.com/download/audio/2022/02/07/audio_b12f12e1c3.mp3',
         audiodownload: '',
-        image: 'https://cdn.pixabay.com/audio/2022/02/07/15-59-09-795_200x200.jpg',
+        image: '',
         duration: 170
     },
     {
@@ -58,7 +58,7 @@ const DEFAULT_TRACKS: JamendoTrack[] = [
         artist_name: 'SergePavkinMusic',
         audio: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_8cb749d9a7.mp3',
         audiodownload: '',
-        image: 'https://cdn.pixabay.com/audio/2022/03/15/05-56-21-999_200x200.jpg',
+        image: '',
         duration: 105
     },
 ];

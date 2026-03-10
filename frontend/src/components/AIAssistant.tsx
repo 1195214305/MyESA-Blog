@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Settings } from "lucide-react";
+import { X, Send, Settings, Loader2, Trash2 } from "lucide-react";
 import aiAssistantImg from "@/assets/images/ai-assistant.png";
 import { useSettingsStore } from "@/store";
 import { AI_PROVIDERS } from "@/services/api";
 
 type Expression = "neutral" | "shy" | "speaking" | "wink";
+
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +15,9 @@ export const AIAssistant = () => {
     const [showSettings, setShowSettings] = useState(false);
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+    const [loading, setLoading] = useState(false);
     const { aiConfig, setAIConfig } = useSettingsStore();
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // 表情位置映射（2x2网格）
     const expressionPosition: Record<Expression, string> = {
@@ -22,6 +26,10 @@ export const AIAssistant = () => {
         speaking: "0% 100%",   // 左下
         wink: "100% 100%",     // 右下
     };
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     const handleMouseEnter = (area: "head" | "body") => {
         if (area === "head") {
@@ -32,24 +40,79 @@ export const AIAssistant = () => {
     };
 
     const handleMouseLeave = () => {
-        setExpression("neutral");
+        if (!loading) setExpression("neutral");
     };
 
     const handleSend = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || loading) return;
 
-        setMessages((prev) => [...prev, { role: "user", content: input }]);
+        const userMessage = input.trim();
+        setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
         setInput("");
         setExpression("speaking");
+        setLoading(true);
 
-        // 模拟AI回复（实际应调用API）
-        setTimeout(() => {
+        // 检查是否配置了 API Key
+        if (!aiConfig.apiKey) {
             setMessages((prev) => [
                 ...prev,
-                { role: "assistant", content: "你好！我是AI小助手，有什么可以帮你的吗？😊" },
+                {
+                    role: "assistant",
+                    content: "请先在设置中配置你的 API Key 才能使用 AI 对话功能。点击右上角齿轮图标进行设置。",
+                },
             ]);
             setExpression("neutral");
-        }, 1500);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // 构建对话上下文
+            const chatMessages = [
+                {
+                    role: "system",
+                    content: "你是 TaoChen 博客的 AI 助手，友善、专业、简洁地回答问题。博主是一名全栈开发者，擅长 React、TypeScript、Python、边缘计算等技术。",
+                },
+                ...messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+                { role: "user", content: userMessage },
+            ];
+
+            const res = await fetch(`${API_BASE}/api/ai/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    provider: aiConfig.provider,
+                    apiKey: aiConfig.apiKey,
+                    model: aiConfig.model,
+                    messages: chatMessages,
+                }),
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || `请求失败 (${res.status})`);
+            }
+
+            const data = await res.json();
+            const reply = data.choices?.[0]?.message?.content || "抱歉，AI 没有返回有效回复。";
+
+            setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+        } catch (error: any) {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: `请求出错: ${error.message}。请检查 API Key 和网络连接。`,
+                },
+            ]);
+        } finally {
+            setExpression("neutral");
+            setLoading(false);
+        }
+    };
+
+    const clearMessages = () => {
+        setMessages([]);
     };
 
     return (
@@ -102,10 +165,19 @@ export const AIAssistant = () => {
                                 />
                                 <div>
                                     <h3 className="font-bold text-white">AI 小助手</h3>
-                                    <p className="text-xs text-slate-400">随时为您服务 ✨</p>
+                                    <p className="text-xs text-slate-400">
+                                        {aiConfig.apiKey ? `${AI_PROVIDERS[aiConfig.provider as keyof typeof AI_PROVIDERS]?.name || aiConfig.provider}` : "未配置 API Key"}
+                                    </p>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={clearMessages}
+                                    className="p-2 text-slate-400 hover:text-white transition-colors"
+                                    title="清空对话"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
                                 <button
                                     onClick={() => setShowSettings(!showSettings)}
                                     className="p-2 text-slate-400 hover:text-white transition-colors"
@@ -151,6 +223,18 @@ export const AIAssistant = () => {
                                             </select>
                                         </div>
                                         <div>
+                                            <label className="text-xs text-slate-400">模型</label>
+                                            <select
+                                                value={aiConfig.model}
+                                                onChange={(e) => setAIConfig({ model: e.target.value })}
+                                                className="w-full mt-1 px-3 py-2 bg-slate-800 border border-white/10 rounded-lg text-white text-sm"
+                                            >
+                                                {(AI_PROVIDERS[aiConfig.provider as keyof typeof AI_PROVIDERS]?.models || []).map((m) => (
+                                                    <option key={m} value={m}>{m}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
                                             <label className="text-xs text-slate-400">API Key</label>
                                             <input
                                                 type="password"
@@ -169,6 +253,9 @@ export const AIAssistant = () => {
                                                 className="w-full mt-1 px-3 py-2 bg-slate-800 border border-white/10 rounded-lg text-white text-sm"
                                             />
                                         </div>
+                                        <p className="text-xs text-slate-500">
+                                            API Key 仅保存在本地浏览器，不会上传到服务器。
+                                        </p>
                                     </div>
                                 </motion.div>
                             )}
@@ -178,7 +265,9 @@ export const AIAssistant = () => {
                         <div className="h-64 overflow-y-auto p-4 space-y-3">
                             {messages.length === 0 && (
                                 <p className="text-center text-slate-500 text-sm py-8">
-                                    开始和我聊天吧！💬
+                                    {aiConfig.apiKey
+                                        ? "开始和我聊天吧！"
+                                        : "请先点击齿轮图标配置 API Key"}
                                 </p>
                             )}
                             {messages.map((msg, idx) => (
@@ -187,7 +276,7 @@ export const AIAssistant = () => {
                                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                                 >
                                     <div
-                                        className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${msg.role === "user"
+                                        className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm whitespace-pre-wrap ${msg.role === "user"
                                             ? "bg-violet-500 text-white"
                                             : "bg-slate-800 text-slate-200"
                                             }`}
@@ -196,6 +285,15 @@ export const AIAssistant = () => {
                                     </div>
                                 </div>
                             ))}
+                            {loading && (
+                                <div className="flex justify-start">
+                                    <div className="px-4 py-2 rounded-2xl bg-slate-800 text-slate-400 text-sm flex items-center gap-2">
+                                        <Loader2 size={14} className="animate-spin" />
+                                        思考中...
+                                    </div>
+                                </div>
+                            )}
+                            <div ref={messagesEndRef} />
                         </div>
 
                         {/* Input */}
@@ -205,13 +303,15 @@ export const AIAssistant = () => {
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                                    placeholder="输入消息..."
-                                    className="flex-1 px-4 py-2 bg-slate-800 border border-white/10 rounded-full text-white text-sm focus:outline-none focus:border-violet-500"
+                                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                                    placeholder={aiConfig.apiKey ? "输入消息..." : "请先配置 API Key"}
+                                    disabled={loading}
+                                    className="flex-1 px-4 py-2 bg-slate-800 border border-white/10 rounded-full text-white text-sm focus:outline-none focus:border-violet-500 disabled:opacity-50"
                                 />
                                 <button
                                     onClick={handleSend}
-                                    className="p-2.5 bg-violet-500 text-white rounded-full hover:bg-violet-400 transition-colors"
+                                    disabled={loading || !input.trim()}
+                                    className="p-2.5 bg-violet-500 text-white rounded-full hover:bg-violet-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <Send size={18} />
                                 </button>
