@@ -433,23 +433,33 @@ async function handleRequest(request, env) {
     return new Response(null, { headers: corsHeaders })
   }
 
-  // 仅处理 /api/ 开头的请求，其余交给静态资源服务
-  if (!path.startsWith('/api/')) {
-    return new Response(null, { status: 404 })
+  // API 路由
+  if (path.startsWith('/api/')) {
+    try {
+      if (path === '/api/health') return await handleHealth(env)
+      if (path.startsWith('/api/guestbook')) return await handleGuestbook(request, env)
+      if (path.startsWith('/api/comments')) return await handleComments(request, url, env)
+      if (path === '/api/stats' || path === '/api/visits') return await handleStats(request, url, env)
+      if (path.startsWith('/api/links')) return await handleLinks(request, url, env)
+      if (path.startsWith('/api/settings')) return await handleSettings(request, url, env)
+      if (path === '/api/ai/chat') return await handleAIProxy(request)
+      return jsonResponse({ error: '接口未找到', path }, 404)
+    } catch (error) {
+      return jsonResponse({ error: `服务器错误: ${error.message}` }, 500)
+    }
   }
 
-  try {
-    if (path === '/api/health') return await handleHealth(env)
-    if (path.startsWith('/api/guestbook')) return await handleGuestbook(request, env)
-    if (path.startsWith('/api/comments')) return await handleComments(request, url, env)
-    if (path === '/api/stats' || path === '/api/visits') return await handleStats(request, url, env)
-    if (path.startsWith('/api/links')) return await handleLinks(request, url, env)
-    if (path.startsWith('/api/settings')) return await handleSettings(request, url, env)
-    if (path === '/api/ai/chat') return await handleAIProxy(request)
-    return jsonResponse({ error: '接口未找到', path }, 404)
-  } catch (error) {
-    return jsonResponse({ error: `服务器错误: ${error.message}` }, 500)
+  // 非 API 请求：尝试从静态资源获取，未命中则返回 index.html（SPA路由）
+  if (env?.ASSETS) {
+    const assetRes = await env.ASSETS.fetch(request)
+    if (assetRes.status !== 404) return assetRes
+    // 静态资源未命中，返回 index.html 支持 SPA 客户端路由
+    const indexReq = new Request(new URL('/', request.url), request)
+    return env.ASSETS.fetch(indexReq)
   }
+
+  // 没有 ASSETS 绑定时直接放行
+  return fetch(request)
 }
 
 export default { fetch: handleRequest }
