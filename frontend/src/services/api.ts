@@ -1,9 +1,11 @@
 // ==================== 通用缓存工具 ====================
 const CACHE_TTL = 30 * 60 * 1000; // 30分钟
+const FAIL_CACHE_TTL = 5 * 60 * 1000; // 失败缓存5分钟，防止频繁重试
 
 interface CacheEntry<T> {
     data: T;
     timestamp: number;
+    ttl?: number; // 自定义TTL
 }
 
 function getCached<T>(key: string): T | null {
@@ -11,18 +13,30 @@ function getCached<T>(key: string): T | null {
         const raw = localStorage.getItem(key);
         if (!raw) return null;
         const entry: CacheEntry<T> = JSON.parse(raw);
-        if (Date.now() - entry.timestamp < CACHE_TTL) {
+        const ttl = entry.ttl || CACHE_TTL;
+        if (Date.now() - entry.timestamp < ttl) {
             return entry.data;
         }
     } catch { /* 缓存读取失败忽略 */ }
     return null;
 }
 
-function setCache<T>(key: string, data: T): void {
+function setCache<T>(key: string, data: T, ttl?: number): void {
     try {
-        const entry: CacheEntry<T> = { data, timestamp: Date.now() };
+        const entry: CacheEntry<T> = { data, timestamp: Date.now(), ttl };
         localStorage.setItem(key, JSON.stringify(entry));
     } catch { /* 存储满或不可用忽略 */ }
+}
+
+// 请求去重：同一个 key 的并发请求共享同一个 Promise
+const inflightRequests = new Map<string, Promise<any>>();
+
+function dedup<T>(key: string, fn: () => Promise<T>): Promise<T> {
+    const existing = inflightRequests.get(key);
+    if (existing) return existing;
+    const promise = fn().finally(() => inflightRequests.delete(key));
+    inflightRequests.set(key, promise);
+    return promise;
 }
 
 // ==================== 音乐播放器 ====================
@@ -107,20 +121,27 @@ export interface GitHubEvent {
     created_at: string;
 }
 
-export async function fetchGitHubEvents(username = '1195214305', limit = 10): Promise<GitHubEvent[]> {
+export function fetchGitHubEvents(username = '1195214305', limit = 10): Promise<GitHubEvent[]> {
     const cacheKey = `gh_events_${username}`;
-    const cached = getCached<GitHubEvent[]>(cacheKey);
-    if (cached) return cached;
+    return dedup(cacheKey, async () => {
+        const cached = getCached<GitHubEvent[]>(cacheKey);
+        if (cached) return cached;
 
-    try {
-        const response = await fetch(`https://api.github.com/users/${username}/events?per_page=${limit}`);
-        if (!response.ok) return getCached<GitHubEvent[]>(cacheKey) || [];
-        const data = await response.json();
-        setCache(cacheKey, data);
-        return data;
-    } catch {
-        return getCached<GitHubEvent[]>(cacheKey) || [];
-    }
+        try {
+            const response = await fetch(`https://api.github.com/users/${username}/events?per_page=${limit}`);
+            if (!response.ok) {
+                // 403限流时缓存空结果5分钟，防止重复请求
+                setCache(cacheKey, [], FAIL_CACHE_TTL);
+                return [];
+            }
+            const data = await response.json();
+            setCache(cacheKey, data);
+            return data;
+        } catch {
+            setCache(cacheKey, [], FAIL_CACHE_TTL);
+            return [];
+        }
+    });
 }
 
 // 格式化 GitHub 事件
@@ -200,43 +221,55 @@ export function getDeploymentUrl(repoName: string): string {
     return `https://${repoName.toLowerCase()}${ESA_DOMAIN}`;
 }
 
-export async function fetchGitHubRepos(): Promise<GitHubRepo[]> {
+export function fetchGitHubRepos(): Promise<GitHubRepo[]> {
     const cacheKey = 'gh_repos';
-    const cached = getCached<GitHubRepo[]>(cacheKey);
-    if (cached) return cached;
+    return dedup(cacheKey, async () => {
+        const cached = getCached<GitHubRepo[]>(cacheKey);
+        if (cached) return cached;
 
-    try {
-        const username = '1195214305';
-        const response = await fetch(
-            `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`
-        );
-        if (!response.ok) return getCached<GitHubRepo[]>(cacheKey) || [];
-        const data = await response.json();
-        setCache(cacheKey, data);
-        return data;
-    } catch {
-        return getCached<GitHubRepo[]>(cacheKey) || [];
-    }
+        try {
+            const username = '1195214305';
+            const response = await fetch(
+                `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`
+            );
+            if (!response.ok) {
+                setCache(cacheKey, [], FAIL_CACHE_TTL);
+                return [];
+            }
+            const data = await response.json();
+            setCache(cacheKey, data);
+            return data;
+        } catch {
+            setCache(cacheKey, [], FAIL_CACHE_TTL);
+            return [];
+        }
+    });
 }
 
-export async function fetchRepoTree(repoName: string): Promise<any[]> {
+export function fetchRepoTree(repoName: string): Promise<any[]> {
     const cacheKey = `gh_tree_${repoName}`;
-    const cached = getCached<any[]>(cacheKey);
-    if (cached) return cached;
+    return dedup(cacheKey, async () => {
+        const cached = getCached<any[]>(cacheKey);
+        if (cached) return cached;
 
-    try {
-        const username = '1195214305';
-        const response = await fetch(
-            `https://api.github.com/repos/${username}/${repoName}/git/trees/main?recursive=1`
-        );
-        if (!response.ok) return getCached<any[]>(cacheKey) || [];
-        const data = await response.json();
-        const tree = data.tree || [];
-        setCache(cacheKey, tree);
-        return tree;
-    } catch {
-        return getCached<any[]>(cacheKey) || [];
-    }
+        try {
+            const username = '1195214305';
+            const response = await fetch(
+                `https://api.github.com/repos/${username}/${repoName}/git/trees/main?recursive=1`
+            );
+            if (!response.ok) {
+                setCache(cacheKey, [], FAIL_CACHE_TTL);
+                return [];
+            }
+            const data = await response.json();
+            const tree = data.tree || [];
+            setCache(cacheKey, tree);
+            return tree;
+        } catch {
+            setCache(cacheKey, [], FAIL_CACHE_TTL);
+            return [];
+        }
+    });
 }
 
 // AI 服务配置预设

@@ -15,6 +15,7 @@ interface GitHubStats {
 
 const STATS_CACHE_KEY = 'gh_user_stats';
 const STATS_CACHE_TTL = 30 * 60 * 1000; // 30分钟
+const STATS_FAIL_TTL = 5 * 60 * 1000; // 失败缓存5分钟
 
 export const AboutPage = () => {
     const { contactEmail, setContactEmail } = useSettingsStore();
@@ -30,12 +31,15 @@ export const AboutPage = () => {
     const fetchGitHubStats = async () => {
         try {
             setLoadingStats(true);
-            // 先读缓存
+            // 先读缓存（包括失败缓存）
             const raw = localStorage.getItem(STATS_CACHE_KEY);
             if (raw) {
                 const cached = JSON.parse(raw);
-                if (Date.now() - cached.timestamp < STATS_CACHE_TTL) {
-                    setGithubStats(cached.data);
+                const ttl = cached.isFail ? STATS_FAIL_TTL : STATS_CACHE_TTL;
+                if (Date.now() - cached.timestamp < ttl) {
+                    if (!cached.isFail) {
+                        setGithubStats(cached.data);
+                    }
                     setLoadingStats(false);
                     return;
                 }
@@ -44,7 +48,6 @@ export const AboutPage = () => {
             const userRes = await fetch("https://api.github.com/users/1195214305");
             if (userRes.ok) {
                 const userData = await userRes.json();
-                // 复用 fetchGitHubRepos 的缓存获取 star 数
                 const repos = await fetchGitHubRepos();
                 const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
                 const stats: GitHubStats = {
@@ -56,16 +59,23 @@ export const AboutPage = () => {
                 setGithubStats(stats);
                 localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ data: stats, timestamp: Date.now() }));
             } else {
-                // API 被限流，尝试用过期缓存
+                // API 被限流，缓存失败状态5分钟防止重试
+                localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ isFail: true, timestamp: Date.now() }));
+                // 尝试用过期缓存
                 if (raw) {
-                    setGithubStats(JSON.parse(raw).data);
+                    const parsed = JSON.parse(raw);
+                    if (parsed.data) setGithubStats(parsed.data);
                 }
             }
         } catch {
-            // 网络失败，用过期缓存
+            // 网络失败，缓存失败状态
+            localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ isFail: true, timestamp: Date.now() }));
             try {
                 const raw = localStorage.getItem(STATS_CACHE_KEY);
-                if (raw) setGithubStats(JSON.parse(raw).data);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.data) setGithubStats(parsed.data);
+                }
             } catch { /* 忽略 */ }
         } finally {
             setLoadingStats(false);

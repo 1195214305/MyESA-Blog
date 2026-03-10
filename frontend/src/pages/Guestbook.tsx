@@ -13,8 +13,23 @@ interface GuestbookEntry {
 }
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
+const GUESTBOOK_STORAGE_KEY = 'guestbook_entries';
 
 const emojis = ['😊', '🎉', '👍', '❤️', '🔥', '✨', '🚀', '💡', '🌟', '💪'];
+
+// localStorage 存取
+function getLocalEntries(): GuestbookEntry[] {
+    try {
+        const raw = localStorage.getItem(GUESTBOOK_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+}
+
+function saveLocalEntries(entries: GuestbookEntry[]): void {
+    try {
+        localStorage.setItem(GUESTBOOK_STORAGE_KEY, JSON.stringify(entries));
+    } catch { /* 忽略 */ }
+}
 
 export const Guestbook = () => {
     const [entries, setEntries] = useState<GuestbookEntry[]>([]);
@@ -30,35 +45,22 @@ export const Guestbook = () => {
     }, []);
 
     const fetchEntries = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const res = await fetch(`${API_BASE}/api/guestbook`);
             if (res.ok) {
                 const data = await res.json();
                 setEntries(data);
+                saveLocalEntries(data);
+                setLoading(false);
+                return;
             }
-        } catch (error) {
-            console.error('Failed to fetch guestbook:', error);
-            // 模拟数据
-            setEntries([
-                {
-                    id: '1',
-                    author: '小明',
-                    content: '博客设计得很漂亮，继续加油！',
-                    createdAt: new Date(Date.now() - 86400000).toISOString(),
-                    emoji: '🎉',
-                },
-                {
-                    id: '2',
-                    author: '技术爱好者',
-                    content: '学到了很多边缘计算的知识，感谢分享！',
-                    createdAt: new Date(Date.now() - 172800000).toISOString(),
-                    emoji: '💡',
-                },
-            ]);
-        } finally {
-            setLoading(false);
+        } catch {
+            // 边缘函数不可用
         }
+        // API 不可用时从 localStorage 加载
+        setEntries(getLocalEntries());
+        setLoading(false);
     };
 
     const submitEntry = async () => {
@@ -66,6 +68,14 @@ export const Guestbook = () => {
 
         setSubmitting(true);
         localStorage.setItem('guestbook_author', authorName);
+
+        const newEntry: GuestbookEntry = {
+            id: Date.now().toString(),
+            author: authorName,
+            content: newMessage,
+            createdAt: new Date().toISOString(),
+            emoji: selectedEmoji,
+        };
 
         try {
             const res = await fetch(`${API_BASE}/api/guestbook`, {
@@ -81,21 +91,19 @@ export const Guestbook = () => {
             if (res.ok) {
                 fetchEntries();
                 setNewMessage('');
+                setSubmitting(false);
+                return;
             }
-        } catch (error) {
-            // 本地添加
-            const newEntry: GuestbookEntry = {
-                id: Date.now().toString(),
-                author: authorName,
-                content: newMessage,
-                createdAt: new Date().toISOString(),
-                emoji: selectedEmoji,
-            };
-            setEntries([newEntry, ...entries]);
-            setNewMessage('');
-        } finally {
-            setSubmitting(false);
+        } catch {
+            // 边缘函数不可用
         }
+
+        // API 不可用时存入 localStorage
+        const updated = [newEntry, ...entries];
+        setEntries(updated);
+        saveLocalEntries(updated);
+        setNewMessage('');
+        setSubmitting(false);
     };
 
     return (

@@ -19,6 +19,21 @@ interface CommentSectionProps {
 
 // API 基础URL - 生产环境使用同域边缘函数
 const API_BASE = import.meta.env.VITE_API_URL || '';
+const COMMENTS_STORAGE_PREFIX = 'blog_comments_';
+
+// localStorage 存取
+function getLocalComments(postId: string): Comment[] {
+    try {
+        const raw = localStorage.getItem(`${COMMENTS_STORAGE_PREFIX}${postId}`);
+        return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+}
+
+function saveLocalComments(postId: string, comments: Comment[]): void {
+    try {
+        localStorage.setItem(`${COMMENTS_STORAGE_PREFIX}${postId}`, JSON.stringify(comments));
+    } catch { /* 忽略 */ }
+}
 
 export const CommentSection = ({ postId, onCommentCountChange }: CommentSectionProps) => {
     const [comments, setComments] = useState<Comment[]>([]);
@@ -34,29 +49,25 @@ export const CommentSection = ({ postId, onCommentCountChange }: CommentSectionP
     }, [postId]);
 
     const fetchComments = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const res = await fetch(`${API_BASE}/api/comments/${postId}`);
             if (res.ok) {
                 const data = await res.json();
                 setComments(data);
                 onCommentCountChange?.(data.length);
+                saveLocalComments(postId, data);
+                setLoading(false);
+                return;
             }
-        } catch (error) {
-            console.error('Failed to fetch comments:', error);
-            // 使用模拟数据
-            setComments([
-                {
-                    id: '1',
-                    author: '访客用户',
-                    content: '这篇文章写得很好，学到了很多！',
-                    createdAt: new Date().toISOString(),
-                    likes: 5,
-                },
-            ]);
-        } finally {
-            setLoading(false);
+        } catch {
+            // 边缘函数不可用
         }
+        // API 不可用时从 localStorage 加载
+        const local = getLocalComments(postId);
+        setComments(local);
+        onCommentCountChange?.(local.length);
+        setLoading(false);
     };
 
     const submitComment = async () => {
@@ -64,6 +75,14 @@ export const CommentSection = ({ postId, onCommentCountChange }: CommentSectionP
 
         setSubmitting(true);
         localStorage.setItem('comment_author', authorName);
+
+        const newItem: Comment = {
+            id: Date.now().toString(),
+            author: authorName,
+            content: newComment,
+            createdAt: new Date().toISOString(),
+            likes: 0,
+        };
 
         try {
             const res = await fetch(`${API_BASE}/api/comments`, {
@@ -81,22 +100,20 @@ export const CommentSection = ({ postId, onCommentCountChange }: CommentSectionP
                 fetchComments();
                 setNewComment('');
                 setReplyTo(null);
+                setSubmitting(false);
+                return;
             }
-        } catch (error) {
-            // 本地添加
-            const newItem: Comment = {
-                id: Date.now().toString(),
-                author: authorName,
-                content: newComment,
-                createdAt: new Date().toISOString(),
-                likes: 0,
-            };
-            setComments([newItem, ...comments]);
-            setNewComment('');
-            setReplyTo(null);
-        } finally {
-            setSubmitting(false);
+        } catch {
+            // 边缘函数不可用
         }
+
+        // API 不可用时存入 localStorage
+        const updated = [newItem, ...comments];
+        setComments(updated);
+        saveLocalComments(postId, updated);
+        setNewComment('');
+        setReplyTo(null);
+        setSubmitting(false);
     };
 
     const likeComment = async (commentId: string) => {
