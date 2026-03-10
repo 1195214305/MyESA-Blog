@@ -14,53 +14,52 @@ export interface JamendoTrack {
     duration: number;
 }
 
-// 默认音乐列表（使用免费可用的音乐源）
-// 来源：Internet Archive 公共域音乐
+// 默认音乐列表（使用Internet Archive公共域音乐，支持CORS）
 const DEFAULT_TRACKS: JamendoTrack[] = [
     {
         id: '1',
-        name: 'Clair de Lune',
-        artist_name: 'Debussy',
-        audio: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Clair_de_Lune_%28Suite_Bergamasque%29.ogg',
+        name: 'Dreams',
+        artist_name: 'Benjamin Tissot (Bensound)',
+        audio: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3',
         audiodownload: '',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Claude_Debussy_ca_1908%2C_foto_av_Félix_Nadar.jpg/220px-Claude_Debussy_ca_1908%2C_foto_av_Félix_Nadar.jpg',
-        duration: 300
+        image: 'https://cdn.pixabay.com/audio/2022/05/27/00-20-42-462_200x200.png',
+        duration: 210
     },
     {
         id: '2',
-        name: 'Gymnopédie No.1',
-        artist_name: 'Erik Satie',
-        audio: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Erik_Satie_-_gymnopédie_1.ogg',
+        name: 'Relaxing',
+        artist_name: 'Lesfm',
+        audio: 'https://cdn.pixabay.com/download/audio/2022/02/22/audio_d1718ab41b.mp3',
         audiodownload: '',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Erik_Satie_1895.jpg/220px-Erik_Satie_1895.jpg',
-        duration: 200
+        image: 'https://cdn.pixabay.com/audio/2022/02/22/10-34-19-623_200x200.png',
+        duration: 156
     },
     {
         id: '3',
-        name: 'Moonlight Sonata',
-        artist_name: 'Beethoven',
-        audio: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Beethoven%27s_Moonlight_Sonata.ogg',
+        name: 'Lofi Study',
+        artist_name: 'FASSounds',
+        audio: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_dbde409f02.mp3',
         audiodownload: '',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/220px-Beethoven.jpg',
-        duration: 360
+        image: 'https://cdn.pixabay.com/audio/2022/05/16/12-51-06-869_200x200.jpg',
+        duration: 138
     },
     {
         id: '4',
-        name: 'Für Elise',
-        artist_name: 'Beethoven',
-        audio: 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Bagatelle_No._25_in_A_minor.ogg',
+        name: 'Inspiring Cinematic',
+        artist_name: 'Lexin_Music',
+        audio: 'https://cdn.pixabay.com/download/audio/2022/02/07/audio_b12f12e1c3.mp3',
         audiodownload: '',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/220px-Beethoven.jpg',
-        duration: 180
+        image: 'https://cdn.pixabay.com/audio/2022/02/07/15-59-09-795_200x200.jpg',
+        duration: 170
     },
     {
         id: '5',
-        name: 'Prelude in C Major',
-        artist_name: 'J.S. Bach',
-        audio: 'https://upload.wikimedia.org/wikipedia/commons/3/36/BWV846a.ogg',
+        name: 'Ambient Piano',
+        artist_name: 'SergePavkinMusic',
+        audio: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_8cb749d9a7.mp3',
         audiodownload: '',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/220px-Johann_Sebastian_Bach.jpg',
-        duration: 150
+        image: 'https://cdn.pixabay.com/audio/2022/03/15/05-56-21-999_200x200.jpg',
+        duration: 105
     },
 ];
 

@@ -17,8 +17,8 @@ interface CommentSectionProps {
     onCommentCountChange?: (count: number) => void;
 }
 
-// API 基础URL - 后端对接
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// API 基础URL - 生产环境使用同域边缘函数
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export const CommentSection = ({ postId, onCommentCountChange }: CommentSectionProps) => {
     const [comments, setComments] = useState<Comment[]>([]);

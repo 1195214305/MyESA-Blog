@@ -1,5 +1,6 @@
 // 后端 API 服务封装
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// 生产环境使用同域边缘函数（空字符串），开发环境可通过 .env 设置 VITE_API_URL
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 // 通用请求方法
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {

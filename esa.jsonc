@@ -1,16 +1,9 @@
 {
     "name": "my-esa-blog",
-    "entry": "./functions/api/index.ts",
-    "installCommand": "npm install",
-    "buildCommand": "npm run build",
+    "entry": "./functions/index.js",
+    "installCommand": "cd frontend && npm install",
+    "buildCommand": "cd frontend && npm run build",
     "assets": {
-        "directory": "./frontend/dist",
-        "notFoundStrategy": "singlePageApplication"
-    },
-    "routes": [
-        {
-            "pattern": "/api/*",
-            "function": "api/index"
-        }
-    ]
+        "directory": "./frontend/dist"
+    }
 }
