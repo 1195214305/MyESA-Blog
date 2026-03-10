@@ -3,8 +3,11 @@
  * 使用 Turso (libSQL) HTTP API 实现数据持久化
  *
  * 需要在 ESA 控制台配置环境变量：
- *   TURSO_URL         - Turso 数据库地址（libsql:// 或 https://）
- *   TURSO_AUTH_TOKEN   - Turso 认证令牌
+ *   TURSO_URL           - Turso 数据库地址（libsql:// 或 https://）
+ *   TURSO_AUTH_TOKEN    - Turso 认证令牌（若超100字符限制，可拆分为下面3个）
+ *   TURSO_TOKEN_A       - 令牌第1段
+ *   TURSO_TOKEN_B       - 令牌第2段
+ *   TURSO_TOKEN_C       - 令牌第3段
  */
 
 // ==================== 基础工具 ====================
@@ -30,13 +33,24 @@ function getTursoHttpUrl(env) {
 }
 
 /**
+ * 获取 Turso 认证令牌（支持单变量或拆分3段拼接）
+ */
+function getTursoToken(env) {
+  if (env?.TURSO_AUTH_TOKEN) return env.TURSO_AUTH_TOKEN
+  const a = env?.TURSO_TOKEN_A || ''
+  const b = env?.TURSO_TOKEN_B || ''
+  const c = env?.TURSO_TOKEN_C || ''
+  return (a + b + c) || ''
+}
+
+/**
  * 执行单条 SQL 并返回结果
  */
 async function dbQuery(env, sql, args) {
   const url = getTursoHttpUrl(env)
-  const token = env?.TURSO_AUTH_TOKEN
+  const token = getTursoToken(env)
   if (!url || !token) {
-    throw new Error('数据库未配置: 请设置 TURSO_URL 和 TURSO_AUTH_TOKEN 环境变量')
+    throw new Error('数据库未配置: 请设置 TURSO_URL 和 TURSO_TOKEN_A/B/C 环境变量')
   }
 
   const stmtArgs = (args || []).map(a => {
@@ -89,7 +103,7 @@ async function dbQuery(env, sql, args) {
  */
 async function dbBatch(env, sqls) {
   const url = getTursoHttpUrl(env)
-  const token = env?.TURSO_AUTH_TOKEN
+  const token = getTursoToken(env)
   if (!url || !token) return
 
   const requests = sqls.map(sql => ({
@@ -391,7 +405,7 @@ async function handleAIProxy(request) {
 async function handleHealth(env) {
   let dbStatus = '未配置'
   const tursoUrl = getTursoHttpUrl(env)
-  if (tursoUrl && env?.TURSO_AUTH_TOKEN) {
+  if (tursoUrl && getTursoToken(env)) {
     try {
       await dbQuery(env, 'SELECT 1 as ok')
       dbStatus = '已连接'
