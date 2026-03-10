@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Github, Mail, MapPin, Code, Sparkles, Save, Edit2, Loader2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useSettingsStore } from "@/store";
+import { fetchGitHubRepos } from "@/services/api";
 import avatarImg from "@/assets/images/avatar.png";
 
 interface GitHubStats {
@@ -11,6 +12,9 @@ interface GitHubStats {
     following: number;
     totalStars: number;
 }
+
+const STATS_CACHE_KEY = 'gh_user_stats';
+const STATS_CACHE_TTL = 30 * 60 * 1000; // 30分钟
 
 export const AboutPage = () => {
     const { contactEmail, setContactEmail } = useSettingsStore();
@@ -26,25 +30,43 @@ export const AboutPage = () => {
     const fetchGitHubStats = async () => {
         try {
             setLoadingStats(true);
+            // 先读缓存
+            const raw = localStorage.getItem(STATS_CACHE_KEY);
+            if (raw) {
+                const cached = JSON.parse(raw);
+                if (Date.now() - cached.timestamp < STATS_CACHE_TTL) {
+                    setGithubStats(cached.data);
+                    setLoadingStats(false);
+                    return;
+                }
+            }
+
             const userRes = await fetch("https://api.github.com/users/1195214305");
             if (userRes.ok) {
                 const userData = await userRes.json();
-                // 获取仓库以统计 star 数
-                const reposRes = await fetch("https://api.github.com/users/1195214305/repos?per_page=100");
-                let totalStars = 0;
-                if (reposRes.ok) {
-                    const repos = await reposRes.json();
-                    totalStars = repos.reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0);
-                }
-                setGithubStats({
+                // 复用 fetchGitHubRepos 的缓存获取 star 数
+                const repos = await fetchGitHubRepos();
+                const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
+                const stats: GitHubStats = {
                     publicRepos: userData.public_repos || 0,
                     followers: userData.followers || 0,
                     following: userData.following || 0,
                     totalStars,
-                });
+                };
+                setGithubStats(stats);
+                localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ data: stats, timestamp: Date.now() }));
+            } else {
+                // API 被限流，尝试用过期缓存
+                if (raw) {
+                    setGithubStats(JSON.parse(raw).data);
+                }
             }
-        } catch (error) {
-            console.warn("GitHub API 请求失败:", error);
+        } catch {
+            // 网络失败，用过期缓存
+            try {
+                const raw = localStorage.getItem(STATS_CACHE_KEY);
+                if (raw) setGithubStats(JSON.parse(raw).data);
+            } catch { /* 忽略 */ }
         } finally {
             setLoadingStats(false);
         }
